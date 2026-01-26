@@ -2009,6 +2009,28 @@ inline void legend(const std::map<std::string, std::string>& keywords)
   Py_DECREF(res);
 }
 
+inline void legend(const std::map<std::string, std::string>& keywords_string, const std::map<std::string, double>& keywords_double)
+{
+  detail::_interpreter::get();
+
+  // construct keyword args
+  PyObject* kwargs = PyDict_New();
+  for(std::map<std::string, std::string>::const_iterator it = keywords_string.begin(); it != keywords_string.end(); ++it)
+  {
+    PyDict_SetItemString(kwargs, it->first.c_str(), PyString_FromString(it->second.c_str()));
+  }
+  for(std::map<std::string, double>::const_iterator it = keywords_double.begin(); it != keywords_double.end(); ++it)
+  {
+    PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
+  }
+
+  PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_legend, detail::_interpreter::get().s_python_empty_tuple, kwargs);
+  if(!res) throw std::runtime_error("Call to legend() failed.");
+
+  Py_DECREF(kwargs);
+  Py_DECREF(res);
+}
+
 template<typename Numeric>
 inline void set_aspect(Numeric ratio)
 {
