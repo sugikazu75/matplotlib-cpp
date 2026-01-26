@@ -470,6 +470,43 @@ bool plot(const std::vector<Numeric> &x, const std::vector<Numeric> &y, const st
     return res;
 }
 
+template<typename Numeric>
+bool plot(const std::vector<Numeric> &x, const std::vector<Numeric> &y, const std::map<std::string, std::string>& keywords_string, const std::map<std::string, double>& keywords_double)
+{
+    assert(x.size() == y.size());
+
+    detail::_interpreter::get();
+
+    // using numpy arrays
+    PyObject* xarray = detail::get_array(x);
+    PyObject* yarray = detail::get_array(y);
+
+    // construct positional args
+    PyObject* args = PyTuple_New(2);
+    PyTuple_SetItem(args, 0, xarray);
+    PyTuple_SetItem(args, 1, yarray);
+
+    // construct keyword args
+    PyObject* kwargs = PyDict_New();
+    for(std::map<std::string, std::string>::const_iterator it = keywords_string.begin(); it != keywords_string.end(); ++it)
+    {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyString_FromString(it->second.c_str()));
+    }
+    for(std::map<std::string, double>::const_iterator it = keywords_double.begin(); it != keywords_double.end(); ++it)
+    {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
+    }
+
+    PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_plot, args, kwargs);
+
+    Py_DECREF(args);
+    Py_DECREF(kwargs);
+    if(res) Py_DECREF(res);
+
+    return res;
+}
+
+
 // TODO - it should be possible to make this work by implementing
 // a non-numpy alternative for `detail::get_2darray()`.
 #ifndef WITHOUT_NUMPY
@@ -2882,6 +2919,11 @@ inline bool plot(const std::vector<double>& y, const std::string& format = "") {
 
 inline bool plot(const std::vector<double>& x, const std::vector<double>& y, const std::map<std::string, std::string>& keywords) {
     return plot<double>(x,y,keywords);
+}
+
+inline bool plot(const std::vector<double>& x, const std::vector<double>& y, const std::map<std::string, std::string>& keywords_string, const std::map<std::string, double>& keywords_double)
+{
+  return plot<double>(x,y,keywords_string,keywords_double);
 }
 
 /*
