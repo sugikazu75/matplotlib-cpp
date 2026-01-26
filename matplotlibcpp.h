@@ -2311,6 +2311,35 @@ inline void tick_params(const std::map<std::string, std::string>& keywords, cons
   Py_DECREF(res);
 }
 
+inline void tick_params(const std::map<std::string, std::string>& keywords_string, const std::map<std::string, double>& keywords_double, const std::string axis = "both")
+{
+  detail::_interpreter::get();
+
+  // construct positional args
+  PyObject* args;
+  args = PyTuple_New(1);
+  PyTuple_SetItem(args, 0, PyString_FromString(axis.c_str()));
+
+  // construct keyword args
+  PyObject* kwargs = PyDict_New();
+  for (std::map<std::string, std::string>::const_iterator it = keywords_string.begin(); it != keywords_string.end(); ++it)
+  {
+    PyDict_SetItemString(kwargs, it->first.c_str(), PyString_FromString(it->second.c_str()));
+  }
+  for (std::map<std::string, double>::const_iterator it = keywords_double.begin(); it != keywords_double.end(); ++it)
+  {
+    PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
+  }
+
+  PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_tick_params, args, kwargs);
+
+  Py_DECREF(args);
+  Py_DECREF(kwargs);
+  if (!res) throw std::runtime_error("Call to tick_params() failed");
+
+  Py_DECREF(res);
+}
+
 inline void subplot(long nrows, long ncols, long plot_number)
 {
     detail::_interpreter::get();
@@ -2366,6 +2395,30 @@ inline void title(const std::string &titlestr, const std::map<std::string, std::
     PyObject* kwargs = PyDict_New();
     for (auto it = keywords.begin(); it != keywords.end(); ++it) {
         PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+    }
+
+    PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_title, args, kwargs);
+    if(!res) throw std::runtime_error("Call to title() failed.");
+
+    Py_DECREF(args);
+    Py_DECREF(kwargs);
+    Py_DECREF(res);
+}
+
+inline void title(const std::string &titlestr, const std::map<std::string, std::string> &keywords_string, const std::map<std::string, double> &keywords_double)
+{
+    detail::_interpreter::get();
+
+    PyObject* pytitlestr = PyString_FromString(titlestr.c_str());
+    PyObject* args = PyTuple_New(1);
+    PyTuple_SetItem(args, 0, pytitlestr);
+
+    PyObject* kwargs = PyDict_New();
+    for (auto it = keywords_string.begin(); it != keywords_string.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+    }
+    for (auto it = keywords_double.begin(); it != keywords_double.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
     }
 
     PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_title, args, kwargs);
@@ -2511,6 +2564,30 @@ inline void xlabel(const std::string &str, const std::map<std::string, std::stri
     Py_DECREF(res);
 }
 
+inline void xlabel(const std::string &str, const std::map<std::string, std::string> &keywords_string, const std::map<std::string, double> &keywords_double)
+{
+    detail::_interpreter::get();
+
+    PyObject* pystr = PyString_FromString(str.c_str());
+    PyObject* args = PyTuple_New(1);
+    PyTuple_SetItem(args, 0, pystr);
+
+    PyObject* kwargs = PyDict_New();
+    for (auto it = keywords_string.begin(); it != keywords_string.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+    }
+    for (auto it = keywords_double.begin(); it != keywords_double.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
+    }
+
+    PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_xlabel, args, kwargs);
+    if(!res) throw std::runtime_error("Call to xlabel() failed.");
+
+    Py_DECREF(args);
+    Py_DECREF(kwargs);
+    Py_DECREF(res);
+}
+
 inline void ylabel(const std::string &str, const std::map<std::string, std::string>& keywords = {})
 {
     detail::_interpreter::get();
@@ -2522,6 +2599,30 @@ inline void ylabel(const std::string &str, const std::map<std::string, std::stri
     PyObject* kwargs = PyDict_New();
     for (auto it = keywords.begin(); it != keywords.end(); ++it) {
         PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+    }
+
+    PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_ylabel, args, kwargs);
+    if(!res) throw std::runtime_error("Call to ylabel() failed.");
+
+    Py_DECREF(args);
+    Py_DECREF(kwargs);
+    Py_DECREF(res);
+}
+
+inline void ylabel(const std::string &str, const std::map<std::string, std::string>& keywords_string, const std::map<std::string, double>& keywords_double)
+{
+    detail::_interpreter::get();
+
+    PyObject* pystr = PyString_FromString(str.c_str());
+    PyObject* args = PyTuple_New(1);
+    PyTuple_SetItem(args, 0, pystr);
+
+    PyObject* kwargs = PyDict_New();
+    for (auto it = keywords_string.begin(); it != keywords_string.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+    }
+    for (auto it = keywords_double.begin(); it != keywords_double.end(); ++it) {
+        PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(it->second));
     }
 
     PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_ylabel, args, kwargs);
